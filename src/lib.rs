@@ -1,32 +1,29 @@
 //! A Hello World example application for working with Gotham.
 
 extern crate iron;
+extern crate mount;
+#[macro_use]
 extern crate router;
-
 use iron::prelude::*;
 use iron::status;
-use iron::{Iron, IronResult, Request, Response};
-use router::Router;
+use mount::Mount;
 
+pub mod api;
 /// Start a server and call the `Handler` we've defined above for each `Request` we receive.
 pub fn run() {
-    let mut router = Router::new();
-    router.get("/", handler, "handler");
-    router.get("/:query", query_handler, "query_handler");
-
-    Iron::new(router).http("localhost:3000").unwrap();
-
-    fn handler(_: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "OK")))
-    }
-
-    fn query_handler(req: &mut Request) -> IronResult<Response> {
-        let ref query = req
-            .extensions
-            .get::<Router>()
-            .unwrap()
-            .find("query")
-            .unwrap_or("/");
-        Ok(Response::with((status::Ok, *query)))
-    }
+    let user_router = router! {
+        user_index: get "/" => api::controllers::user::index,
+        user_view: get "/:id" => api::controllers::user::view,
+        user_create: post "/" => api::controllers::user::create,
+        // user_update: post "/:id" => {
+        //     let mut chain = Chain::new(controllers::user::update);
+        //     chain.link_before(Authorizer::new(
+        //         IsOwnerOf::<User>::new()
+        //     ));
+        //     chain
+        // },
+    };
+    let mut mount = Mount::new();
+    mount.mount("/user", user_router);
+    Iron::new(mount).http("localhost:3000").unwrap();
 }
