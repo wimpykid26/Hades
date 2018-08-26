@@ -10,3 +10,7 @@ pub fn index(_: &mut Request) -> IronResult<Response> {
 pub fn view(_: &mut Request) -> IronResult<Response> {
     Ok(Response::with("Hello World"))
 }
+
+pub fn update(_: &mut Request) -> IronResult<Response> {
+    Ok(Response::with("Hello World"))
+}
