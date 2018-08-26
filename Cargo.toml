@@ -1,0 +1,7 @@
+[package]
+name = "hades"
+version = "0.1.0"
+authors = ["I349732"]
+
+[dependencies]
+iron = "*"
